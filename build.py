@@ -2,6 +2,7 @@ from colorama import Fore, init
 import os
 import glob
 import sys
+import time
 
 init(autoreset=True)
 
@@ -46,41 +47,46 @@ def compile():
         sys.exit(1)
 
     sysroot = os.path.abspath("rootfs/usr")
-    flags = f"--sysroot={sysroot} -I{sysroot}/include -L{sysroot}/lib -static"
+    flags = f"--sysroot={sysroot} -I{sysroot}/include -I/usr/include -L{sysroot}/lib -static"
 
     basari = 0
     hata = 0
     for f in dosyalar:
         out = f.replace(".c", "")
-        ret = os.system(f"{gcc_loc} {flags} {f} -o {out}")
+        if "mauvyd.c" in f:
+            ret = os.system(f"{gcc_loc} {flags} -Ipati-commands/pati-headers {f} pati-commands/pati-headers/pcg.c -o {out}")
+        else:
+            ret = os.system(f"{gcc_loc} {flags} {f} -o {out}")
         if ret == 0:
             print(Fore.GREEN + f"[+] Derlendi: {f} -> {out}")
             basari += 1
         else:
             print(Fore.RED + f"[-] Hata: {f}")
             hata += 1
-
     print(Fore.GREEN + f"[+] Derleme tamam: {basari} başarılı, {hata} hatalı.")
 
 
 def create_nodes():
     print(Fore.GREEN + "[+] Device nodes oluşturuluyor...")
+    os.system("sudo rm -f rootfs/dev/vda rootfs/dev/fb0 rootfs/dev/rtc0 rootfs/dev/urandom")
     os.system("sudo mknod rootfs/dev/vda b 254 0")
-    os.system("mknod rootfs/dev/fb0 c 29 0")
-    os.system("mknod rootfs/dev/rtc0 c 253 0")
-    os.system("mknod rootfs/dev/urandom c 1 9")
+    os.system("sudo mknod rootfs/dev/fb0 c 29 0")
+    os.system("sudo mknod rootfs/dev/rtc0 c 253 0")
+    os.system("sudo mknod rootfs/dev/urandom c 1 9")
 
 def move():
     os.makedirs("rootfs/lib/paticommands", exist_ok=True)
 
     for f in glob.glob("pati-commands/*"):
-        if not f.endswith(".c"):
-            ret = os.system(f"mv {f} rootfs/lib/paticommands/")
-            if ret == 0:
-                print(Fore.GREEN + f"[+] Taşındı: {f}")
-            else:
-                print(Fore.RED + f"[-] Taşınamadı: {f}")
-
+        if not f.endswith(".c") and os.path.isfile(f):
+            os.system(f"cp {f} rootfs/lib/paticommands/")
+            print(Fore.GREEN + f"[+] Taşındı: {f}")
+            os.system(f"rm -f {f}")
+    if os.path.exists("pati-commands/mauvyd"):
+        os.system("cp pati-commands/mauvyd rootfs/init")
+    if os.path.exists("pati-commands/shell"):
+        os.system("cp pati-commands/shell rootfs/bin/")
+    os.system("rm -f rootfs/lib/paticommands/init rootfs/lib/paticommands/shell")
     print(Fore.GREEN + "[+] initramfs oluşturuluyor...")
     ret = os.system("cd rootfs && find . | cpio -o -H newc | gzip -9 > ../initramfs.cpio.gz")
     if ret == 0:
