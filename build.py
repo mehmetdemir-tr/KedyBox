@@ -63,6 +63,13 @@ def compile():
     print(Fore.GREEN + f"[+] Derleme tamam: {basari} başarılı, {hata} hatalı.")
 
 
+def create_nodes():
+    print(Fore.GREEN + "[+] Device nodes oluşturuluyor...")
+    os.system("sudo mknod rootfs/dev/vda b 254 0")
+    os.system("mknod rootfs/dev/fb0 c 29 0")
+    os.system("mknod rootfs/dev/rtc0 c 253 0")
+    os.system("mknod rootfs/dev/urandom c 1 9")
+
 def move():
     os.makedirs("rootfs/lib/paticommands", exist_ok=True)
 
@@ -85,4 +92,5 @@ def move():
 
 extract()
 compile()
+create_nodes()
 move()
