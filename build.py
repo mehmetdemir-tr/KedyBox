@@ -77,15 +77,18 @@ def create_nodes():
 def move():
     os.makedirs("rootfs/lib/paticommands", exist_ok=True)
 
+    if os.path.exists("pati-commands/mauvyd"):
+        os.system("cp pati-commands/mauvyd rootfs/init")
+        os.system("rm -f pati-commands/mauvyd")
+    if os.path.exists("pati-commands/shell"):
+        os.system("cp pati-commands/shell rootfs/bin/")
+        os.system("rm -f pati-commands/shell")
+
     for f in glob.glob("pati-commands/*"):
         if not f.endswith(".c") and os.path.isfile(f):
             os.system(f"cp {f} rootfs/lib/paticommands/")
             print(Fore.GREEN + f"[+] Taşındı: {f}")
             os.system(f"rm -f {f}")
-    if os.path.exists("pati-commands/mauvyd"):
-        os.system("cp pati-commands/mauvyd rootfs/init")
-    if os.path.exists("pati-commands/shell"):
-        os.system("cp pati-commands/shell rootfs/bin/")
     os.system("rm -f rootfs/lib/paticommands/init rootfs/lib/paticommands/shell")
     print(Fore.GREEN + "[+] initramfs oluşturuluyor...")
     ret = os.system("cd rootfs && find . | cpio -o -H newc | gzip -9 > ../initramfs.cpio.gz")
