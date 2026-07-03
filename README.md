@@ -1,8 +1,6 @@
 # PatiOS Mobile Project's environment builder (similar to BusyBox)
 ## How to use?
 
-# NOTE: This project has been archived. and incoming pull requests, Issues will not be accepted.
-
 **1.Clone this repository via git clone https://github.com/mehmetdemir-tr/KedyBox**
 ------------
 **2.Give the permissions with chown or chmod.**
