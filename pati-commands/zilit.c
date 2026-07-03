@@ -1,3 +1,5 @@
+// Zilit - 3 Temmuz 2026 18:16
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
