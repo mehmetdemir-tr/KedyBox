@@ -1,4 +1,4 @@
-# PatiOS Mobile Project's environment builder (similar to BusyBox)
+# PatiOS-Core ekosisteminin imaj paketleyicisi.
 ## How to use?
 
 **1.Clone this repository via git clone https://github.com/mehmetdemir-tr/KedyBox**
